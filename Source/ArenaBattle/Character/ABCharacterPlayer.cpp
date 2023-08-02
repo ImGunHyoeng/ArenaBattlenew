@@ -110,7 +110,7 @@ void AABCharacterPlayer::QuaterMove(const FInputActionValue& Value)
 	}
 	
 	//움직이는 로직
-	FVector MoveDirection = FVector(MovementVector.Y, MovementVector.X, 0.0f);
+	FVector MoveDirection = FVector(MovementVector.X, MovementVector.Y, 0.0f);//입력과 출력의 좌표시스템이 다르기에 x와 y축의 기준이 바귐
 	GetController()->SetControlRotation(FRotationMatrix::MakeFromX(MoveDirection).Rotator());//MakeFormX 넣어준 벡터가 기저벡터가 되도록 설정해주는 함수이다. rotator로 이쪽 방향으로 회전하도록 만들어줌
 	//행렬을 바로 뽑아주는 연산도 존재한다.
 	AddMovementInput(MoveDirection, MovementVectorSize);
