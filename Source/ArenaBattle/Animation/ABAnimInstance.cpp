@@ -23,6 +23,9 @@ void UABAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 {
 	Super::NativeUpdateAnimation(DeltaSeconds);
 
-	Velocity = Movement->Velocity;
-	GroundSpeed = Velocity.Size2D();//2차원으로 값을 계산해줌
+	if (Movement)
+	{
+		Velocity = Movement->Velocity;
+		GroundSpeed = Velocity.Size2D();//2차원으로 값을 계산해줌
+	}
 }
