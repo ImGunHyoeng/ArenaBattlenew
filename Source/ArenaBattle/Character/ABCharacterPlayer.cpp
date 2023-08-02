@@ -4,6 +4,7 @@
 #include "Character/ABCharacterPlayer.h"
 #include "Character/ABCharacterControlDataAsset.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "GameFrameWork/CharacterMovementComponent.h"
 #include "Camera/CameraComponent.h"
 #include "InputMappingContext.h"
 #include "EnhancedInputComponent.h"
@@ -11,6 +12,7 @@
 
 AABCharacterPlayer::AABCharacterPlayer()
 {
+	GetCharacterMovement()->MaxAcceleration = 200.0f;//속도 상승을 천천히 되도록 함.마찰력 실패 가속도 성공
 	// Camera
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
 	CameraBoom->SetupAttachment(RootComponent);
