@@ -3,7 +3,10 @@
 
 #include "Character/ABCharacterBase.h"
 #include "Components/CapsuleComponent.h"
+#include "InputMappingContext.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Character/ABCharacterDataAsset.h"
+#include "ABCharacterControlDataAsset.h"
 
 // Sets default values
 AABCharacterBase::AABCharacterBase()
@@ -44,6 +47,20 @@ AABCharacterBase::AABCharacterBase()
 	{
 		GetMesh()->SetAnimInstanceClass(CharacterAnimRef.Class);
 	}
+
+	static ConstructorHelpers::FObjectFinder<UABCharacterControlDataAsset> ShoulderDataRef(TEXT("/Script/ArenaBattle.ABCharacterControlDataAsset'/Game/ArenaBattle/CharacterControl/ABC_Shoulder.ABC_Shoulder'"));
+	if (ShoulderDataRef.Object)
+	{
+		CharacterControlManager.Add(ECharacterControlType::Shoulder, ShoulderDataRef.Object);
+	}//캐릭터 컨트롤 에셋을 가져와준다.
+	
+	static ConstructorHelpers::FObjectFinder<UABCharacterControlDataAsset> QuaterDataRef(TEXT("/Script/ArenaBattle.ABCharacterControlDataAsset'/Game/ArenaBattle/CharacterControl/ABC_Queter.ABC_Queter'"));
+	if (QuaterDataRef.Object)
+	{
+		CharacterControlManager.Add(ECharacterControlType::Quater, QuaterDataRef.Object);
+	}
+
+
 }
 
 // Called to bind functionality to input
@@ -51,5 +68,20 @@ void AABCharacterBase::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
+}
+
+void AABCharacterBase::SetCharacterControlData(const UABCharacterControlDataAsset* CharacterControlData)
+{
+	bUseControllerRotationYaw=CharacterControlData->bUseControlRotationYaw;
+	
+	bUseControllerRotationPitch=CharacterControlData->bUseControlRotationPitch;
+	
+	bUseControllerRotationRoll=CharacterControlData->bUseControlRotationRoll;
+
+	GetCharacterMovement()->RotationRate = CharacterControlData->RotationRate;
+	
+	GetCharacterMovement()->bUseControllerDesiredRotation= CharacterControlData->bUseControlDesiredRotation;
+	
+	GetCharacterMovement()->bOrientRotationToMovement = CharacterControlData->bOrientRotationToMovement;
 }
 

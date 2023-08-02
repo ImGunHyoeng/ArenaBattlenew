@@ -96,24 +96,6 @@ void AABCharacterPlayer::ShoulderLook(const FInputActionValue& Value)
 
 void AABCharacterPlayer::QuaterMove(const FInputActionValue& Value)
 {
-	FVector2D MovementVector = Value.Get<FVector2D>();
-	float MovementVectorSizeSquared = MovementVector.SquaredLength();
-	float MovementVectorSize = 1.0f;
-
-	if (MovementVectorSizeSquared > 1.0f)
-	{
-		MovementVector.Normalize();//스케일값을 1이상을 처리하기위한 로직
-	}
-	else
-	{
-		MovementVectorSize = FMath::Sqrt(MovementVectorSizeSquared);
-	}
-	
-	//움직이는 로직
-	FVector MoveDirection = FVector(MovementVector.Y, MovementVector.X, 0.0f);
-	GetController()->SetControlRotation(FRotationMatrix::MakeFromX(MoveDirection).Rotator());//MakeFormX 넣어준 벡터가 기저벡터가 되도록 설정해주는 함수이다. rotator로 이쪽 방향으로 회전하도록 만들어줌
-	//행렬을 바로 뽑아주는 연산도 존재한다.
-	AddMovementInput(MoveDirection, MovementVectorSize);
 }
 
 void AABCharacterPlayer::ChangeControl()
