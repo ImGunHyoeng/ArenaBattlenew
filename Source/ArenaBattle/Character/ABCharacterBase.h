@@ -32,4 +32,23 @@ protected:
 
 	virtual void SetCharacterControlData(const UABCharacterControlDataAsset* CharacterControlData);//앞에서 전방위 선언을 했기에 중복 사용안한
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animation)
+		TObjectPtr<class UAnimMontage> ComboActionMontage;	
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AttackData,Meta=(AllowPriviteAccess="true"))
+		TObjectPtr<class UABComboActionData> ComboActionData;
+
+	
+	void ProcessComboAttack();
+
+	void ComboActionBegin();
+	void ComboActionEnd(class UAnimMontage* TargetMontage,bool IsEnded);//애니메이션이 끝나는 타이밍에 호출되도록 델리게이트를 통해서 연동시켜야한다.
+
+	int32 CurrentCombo = 0;
+
+	FTimerHandle ComboTimerHandle;//타이머 세팅 애니메이션 시간 체크용
+	bool HasNextComboCommand = false;//UPROPERTY로 사용할것 아니기에 공간 체크 할필요 x
+
+	void SetComboCheckTimer();
+	void ComboCheck();
 };

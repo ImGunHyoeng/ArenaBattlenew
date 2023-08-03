@@ -12,7 +12,7 @@
 
 AABCharacterPlayer::AABCharacterPlayer()
 {
-	GetCharacterMovement()->MaxAcceleration = 200.0f;//속도 상승을 천천히 되도록 함.마찰력 실패 가속도 성공
+	//GetCharacterMovement()->MaxAcceleration = 200.0f;//속도 상승을 천천히 되도록 함.마찰력 실패 가속도 성공
 	// Camera
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
 	CameraBoom->SetupAttachment(RootComponent);
@@ -59,7 +59,19 @@ AABCharacterPlayer::AABCharacterPlayer()
 		ChangeControlAction = InputActionChangeControlRef.Object;
 	}
 
+	static ConstructorHelpers::FObjectFinder<UInputAction> InputActionAttackRef(TEXT("/Script/EnhancedInput.InputAction'/Game/ArenaBattle/Input/Actions/IA_Attack.IA_Attack'"));
+	if (InputActionAttackRef.Object)
+	{
+		AttackAction = InputActionAttackRef.Object;
+	}
+
 	CurrentCharacterControlType = ECharacterControlType::Quater;
+}
+
+void AABCharacterPlayer::Attack()
+{
+	Super::ProcessComboAttack();
+
 }
 
 void AABCharacterPlayer::BeginPlay()
@@ -183,4 +195,5 @@ void AABCharacterPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 	EnhancedInputComponent->BindAction(ShoulderLookAction, ETriggerEvent::Triggered, this, &AABCharacterPlayer::ShoulderLook);
 	EnhancedInputComponent->BindAction(QuaterMoveAction, ETriggerEvent::Triggered, this, &AABCharacterPlayer::QuaterMove);
 	EnhancedInputComponent->BindAction(ChangeControlAction, ETriggerEvent::Triggered, this, &AABCharacterPlayer::ChangeControl);//함수와 키를 바인드 시켜준다.
+	EnhancedInputComponent->BindAction(AttackAction, ETriggerEvent::Triggered, this, &AABCharacterPlayer::Attack);
 }

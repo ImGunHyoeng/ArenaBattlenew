@@ -6,6 +6,8 @@
 #include "GameFramework/CharacterMovementComponent.h"
 UABAnimInstance::UABAnimInstance()
 {
+	MoveTreshould = 3.0f;
+	JumpTreshould = 100.0f;
 }
 
 void UABAnimInstance::NativeInitializeAnimation()
@@ -27,5 +29,10 @@ void UABAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	{
 		Velocity = Movement->Velocity;
 		GroundSpeed = Velocity.Size2D();//2차원으로 값을 계산해줌
+
+		bIsRunning = GroundSpeed>MoveTreshould;
+
+		bIsFalling = Movement->IsFalling();
+		bIsJumping = bIsFalling & (Velocity.Z > JumpTreshould);
 	}
 }

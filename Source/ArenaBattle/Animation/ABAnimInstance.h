@@ -34,4 +34,13 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Character)
 	FVector Velocity;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Character)
+		uint32 bIsJumping:1;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Character)
+		uint32 bIsFalling : 1;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Character)
+		float JumpTreshould;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Character)
+		float MoveTreshould;
 };

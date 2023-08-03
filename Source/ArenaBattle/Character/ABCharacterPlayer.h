@@ -48,13 +48,13 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, Meta = (AllowPrivateAccess = "true"))
 		TObjectPtr<class UInputAction> ChangeControlAction;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, Meta = (AllowPrivateAccess = "true"))
+		TObjectPtr<class UInputAction> AttackAction;
+
+	void Attack();
 	void ShoulderMove(const FInputActionValue& Value);
 	void ShoulderLook(const FInputActionValue& Value);
 	void QuaterMove(const FInputActionValue& Value);
-
-
-
-	
 	void ChangeControl();
 	void SetCharacterControl(ECharacterControlType NewCharacterControlType);//enum으로 맞는 캐릭터 뷰를 만들어줄것이다.
 
