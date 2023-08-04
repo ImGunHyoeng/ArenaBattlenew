@@ -13,6 +13,12 @@ UCLASS()
 class ARENABATTLE_API AABGameModeBase : public AGameModeBase
 {
 	GENERATED_BODY()
+public:
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animation)
+	TObjectPtr<class AABCharacterNonPlayer> SecondPawnClass;;
+		
+	void Spawn();
+	virtual void BeginPlay() override;
 	AABGameModeBase();
 };

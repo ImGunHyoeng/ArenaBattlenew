@@ -4,7 +4,9 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "Character/ABAnimationAttackInterface.h"
 #include "ABCharacterBase.generated.h"
+
 
 UENUM()
 enum class ECharacterControlType : uint8
@@ -14,7 +16,7 @@ enum class ECharacterControlType : uint8
 };
 
 UCLASS()
-class ARENABATTLE_API AABCharacterBase : public ACharacter
+class ARENABATTLE_API AABCharacterBase : public ACharacter,public IABAnimationAttackInterface
 {
 	GENERATED_BODY()
 
@@ -34,9 +36,14 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animation)
 		TObjectPtr<class UAnimMontage> ComboActionMontage;	
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animation)
+		TObjectPtr<class UAnimMontage> DeadMontage;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AttackData,Meta=(AllowPriviteAccess="true"))
 		TObjectPtr<class UABComboActionData> ComboActionData;
+
+
 
 	
 	void ProcessComboAttack();
@@ -51,4 +58,12 @@ protected:
 
 	void SetComboCheckTimer();
 	void ComboCheck();
+
+	void SetDead();
+
+	virtual float TakeDamage(float Damage, struct FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
+
+public:
+	
+	virtual void AttackHitCheck()override;
 };

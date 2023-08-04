@@ -8,6 +8,7 @@
 #include "Character/ABCharacterDataAsset.h"
 #include "ABCharacterControlDataAsset.h"
 #include "Character/ABComboActionData.h"
+#include "Engine/DamageEvents.h"
 
 // Sets default values
 AABCharacterBase::AABCharacterBase()
@@ -21,12 +22,12 @@ AABCharacterBase::AABCharacterBase()
 
 	// Capsule Component
 	GetCapsuleComponent()->InitCapsuleSize(35.0f, 90.0f);
-	GetCapsuleComponent()->SetCollisionProfileName(TEXT("Pawn"));
+	GetCapsuleComponent()->SetCollisionProfileName(TEXT("ABCapsule"));
 
 	// SkeletalMesh Component
 	GetMesh()->SetRelativeLocationAndRotation(FVector(0.0f, 0.0f, -90.0f), FRotator(0.0f, -90.0f, 0.0f));
 	GetMesh()->SetAnimationMode(EAnimationMode::AnimationBlueprint);
-	GetMesh()->SetCollisionProfileName(TEXT("CharacterMesh"));
+	GetMesh()->SetCollisionProfileName(TEXT("NoCollision"));
 
 	// CharacterMovement Component
 	GetCharacterMovement()->bOrientRotationToMovement = true;
@@ -61,6 +62,14 @@ AABCharacterBase::AABCharacterBase()
 		CharacterControlManager.Add(ECharacterControlType::Quater, QuaterDataRef.Object);
 	}
 
+
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> DeadMontageRef(TEXT("/ Script / Engine.AnimMontage'/Game/Animation/AM_Dead.AM_Dead'"));
+	if (DeadMontageRef.Object)
+	{
+		DeadMontage = DeadMontageRef.Object;
+	}
+	
+	
 
 }
 
@@ -142,6 +151,58 @@ void AABCharacterBase::ComboCheck()
 		SetComboCheckTimer();//콤보의 타이머로 사이에 값이 들어오는지 체크
 		HasNextComboCommand = false;
 	}
+}
+
+void AABCharacterBase::SetDead()
+{
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	AnimInstance->StopAllMontages(0.0f);
+	AnimInstance->Montage_Play(DeadMontage);
+	
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	//죽었을때 충돌처리가 안되도록 처리함
+}
+
+float AABCharacterBase::TakeDamage(float Damage, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+{
+	Super::TakeDamage(Damage, DamageEvent, EventInstigator, DamageCauser);
+	//TODO
+	SetDead();
+
+	return 0.0f;
+}
+
+void AABCharacterBase::AttackHitCheck()
+{
+	FCollisionQueryParams Params(SCENE_QUERY_STAT(Attack),false,this);
+
+	FHitResult OutHitResult;
+	const float AttackRange = 300.0f;
+	const float Radius = 50.0f;
+
+	const FVector Start = GetActorLocation() + GetActorForwardVector() * GetCapsuleComponent()->GetScaledCapsuleRadius();
+	const FVector End = Start + GetActorForwardVector() * AttackRange;
+	//박스의 크기만큼 사이즈
+
+	/*bool bIsHit=GetWorld()->SweepSingleByChannel(OutHitResult, Start, End, FRotationMatrix::MakeFromZ(GetActorForwardVector()).ToQuat(), ECC_GameTraceChannel3, FCollisionShape::MakeSphere(Radius), Params);*/
+	bool bIsHit = GetWorld()->SweepSingleByChannel(OutHitResult, Start, End, FQuat::Identity, ECC_GameTraceChannel3, FCollisionShape::MakeSphere(Radius), Params);
+	if (bIsHit)
+	{
+		FDamageEvent DamageEvent;
+		//Cast<AABCharacterBase>(OutHitResult.GetActor())->SetDead();//상대방에대한 정보를 가져온다.
+		OutHitResult.GetActor()->TakeDamage(100.0f, DamageEvent, GetController(), this);
+		//SetDead();
+	}
+#if ENABLE_DRAW_DEBUG
+	//눈으로 보이도록 그리기 #if로 define 되어있는지 안돼어있는지에 대해서 알고 확인하는 것
+	FVector CapsulePosition = Start + (End - Start) / 2.0f;
+	float HalfHeight = AttackRange / 2.0f;
+	FColor Color = bIsHit? FColor::Green :FColor::Red;
+
+	//DrawDebugCapsule(GetWorld(), CapsulePosition, HalfHeight, Radius, FQuat::Identity, Color,false,3.0f);
+	DrawDebugCapsule(GetWorld(), CapsulePosition, HalfHeight, Radius, FRotationMatrix::MakeFromZ(GetActorForwardVector()).ToQuat(), Color,false,3.0f);
+
+#endif
 }
 
 // Called to bind functionality to input
