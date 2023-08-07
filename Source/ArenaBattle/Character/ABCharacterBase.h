@@ -8,6 +8,9 @@
 #include "ABCharacterBase.generated.h"
 
 
+
+
+
 UENUM()
 enum class ECharacterControlType : uint8
 {
@@ -27,8 +30,9 @@ public:
 public:	
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-
+	virtual void BeginPlay()override;
 protected:
+
 	UPROPERTY(EditAnywhere,Category=CharacterControl,Meta=(AllowPrivateAccess="true"))//Meta: 프라이빗의 값을 가지고 있어도 에디터에서 접근되도록 하는것
 	TMap<ECharacterControlType, class UABCharacterControlDataAsset*> CharacterControlManager;
 
@@ -41,7 +45,13 @@ protected:
 		TObjectPtr<class UAnimMontage> DeadMontage;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AttackData,Meta=(AllowPriviteAccess="true"))
-		TObjectPtr<class UABComboActionData> ComboActionData;
+		TObjectPtr<class UABComboActionData> ComboActionData;	
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animation)
+		TSubclassOf<class AABCharacterNonPlayer> TargetClass;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gamemode,Meta=(AllowPriviteAccess="true"))
+		TSubclassOf<class AABGameModeBase> GamemodeData;
 
 
 
@@ -61,9 +71,26 @@ protected:
 
 	void SetDead();
 
+
+
 	virtual float TakeDamage(float Damage, struct FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 
+	UFUNCTION(BlueprintCallable)
+	void Destroy();	
+
+
+	UFUNCTION(BlueprintCallable)
+	void Spawn();
+public:
+	//FSpawnDelegate SpawnDelegate;
+	UPROPERTY()
+	class AABGameModeBase * ABGameModeBase;
+
+	static void ResetCurcount();
+public:
+	static int32 MaxSpawncount;
+	static int32 Curcount;
 public:
 	
-	virtual void AttackHitCheck()override;
+	virtual void AttackHitCheck() override;
 };

@@ -9,7 +9,12 @@
 #include "ABCharacterControlDataAsset.h"
 #include "Character/ABComboActionData.h"
 #include "Engine/DamageEvents.h"
+#include "TimerManager.h"
+#include "Character/ABCharacterNonPlayer.h"
+#include "Game/ABGameModeBase.h"
 
+int32 AABCharacterBase::MaxSpawncount = 5;
+int32 AABCharacterBase::Curcount = 1;
 // Sets default values
 AABCharacterBase::AABCharacterBase()
 {
@@ -63,14 +68,29 @@ AABCharacterBase::AABCharacterBase()
 	}
 
 
-	static ConstructorHelpers::FObjectFinder<UAnimMontage> DeadMontageRef(TEXT("/ Script / Engine.AnimMontage'/Game/Animation/AM_Dead.AM_Dead'"));
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> DeadMontageRef(TEXT("/ Script/Engine.AnimMontage'/Game/Animation/AM_Dead.AM_Dead'"));
 	if (DeadMontageRef.Object)
 	{
 		DeadMontage = DeadMontageRef.Object;
 	}
 	
+	static ConstructorHelpers::FClassFinder<AABCharacterNonPlayer> TargetRef(TEXT("/Script/CoreUObject.Class'/Script/ArenaBattle.ABCharacterNonPlayer'"));
+	if (TargetRef.Class)
+	{
+		TargetClass = TargetRef.Class;
+	}
+	//ABGameModeBase->SpawnDelegate.BindUFunction(this, FName("Spawn"));
+	//(this, &AABCharacterBase::Spawn)
+	static ConstructorHelpers::FClassFinder<AABGameModeBase> GameModeRef(TEXT("/Script/CoreUObject.Class'/Script/ArenaBattle.ABGameModeBase'"));
+	if (GameModeRef.Class)
+	{
+		GamemodeData = GameModeRef.Class;
+	}
 	
-
+	//ABGameModeBase=(new AABGameModeBase());
+	//ABGameModeBase();
+	//if(ABGameModeBase)
+		
 }
 
 void AABCharacterBase::ProcessComboAttack()
@@ -167,9 +187,71 @@ float AABCharacterBase::TakeDamage(float Damage, FDamageEvent const& DamageEvent
 {
 	Super::TakeDamage(Damage, DamageEvent, EventInstigator, DamageCauser);
 	//TODO
-	SetDead();
+	float DelayTimeDestroy = 5.0f;
+	float DelayTimeSpawn = 3.0f;
 
+	//FTimerDelegate TimerDelegateDestroy;
+	//TimerDelegateDestroy.BindUFunction(this, FName("Destroy"));
+	FTimerDelegate TimerDelegateSpawn;
+	TimerDelegateSpawn.BindUFunction(this, FName("Spawn"));
+
+	FTimerHandle TimerHandle;
+
+
+	SetDead();
+	/*GetWorld()->GetTimerManager().SetTimer(TimerHandle, TimerDelegateDestroy, DelayTimeDestroy, false);*/
+	GetWorld()->GetTimerManager().SetTimer(TimerHandle, TimerDelegateSpawn, DelayTimeSpawn, false);
+	
 	return 0.0f;
+}
+
+void AABCharacterBase::Destroy()
+{
+	AActor::Destroy();
+}
+
+void AABCharacterBase::Spawn()
+{
+	
+	AActor::Destroy();
+	
+	/*ABGameModeBase->SpawnDelegate.Execute();
+	ABGameModeBase->SpawnDelegate.*/
+	//Cast<AABGameModeBase>(GamemodeData->StaticClass())->Spawn();
+	
+	/*TSharedRef<AABGameModeBase> LogWriter= Cast<AABGameModeBase>(AABGameModeBase().StaticClass());
+	GamemodeData
+	SpawnDelegate.BindSP(LogWriter, &AABGameModeBase::Spawn);
+	SpawnDelegate.Excute();
+	*/
+	if (Curcount < MaxSpawncount)
+	{
+	double pos_x = (rand() % 100) * 7;
+	double pos_y = (rand() % 100) * 7;
+	if ((int)pos_x % 2 == 1)pos_x *= -1;
+	if ((int)pos_y % 2 == 1)pos_y *= -1;
+	FVector position(pos_x, pos_y, 90);
+	static FRotator rotation = FRotator::ZeroRotator;
+	
+		AActor* SpawnedActor = GetWorld()->SpawnActor<AABCharacterNonPlayer>(TargetClass, position, rotation);
+		while (SpawnedActor == NULL)
+		{
+			pos_x = (rand() % 100) * 7;
+			pos_y = (rand() % 100) * 7;
+			position.Set(pos_x, pos_y, 90);
+			SpawnedActor = GetWorld()->SpawnActor<AABCharacterNonPlayer>(TargetClass, position, rotation);
+		}
+		Curcount++;
+
+	}
+	
+	
+	
+}
+
+void AABCharacterBase::ResetCurcount()
+{
+	Curcount = 1;
 }
 
 void AABCharacterBase::AttackHitCheck()
@@ -180,6 +262,8 @@ void AABCharacterBase::AttackHitCheck()
 	const float AttackRange = 300.0f;
 	const float Radius = 50.0f;
 
+	
+
 	const FVector Start = GetActorLocation() + GetActorForwardVector() * GetCapsuleComponent()->GetScaledCapsuleRadius();
 	const FVector End = Start + GetActorForwardVector() * AttackRange;
 	//박스의 크기만큼 사이즈
@@ -189,8 +273,19 @@ void AABCharacterBase::AttackHitCheck()
 	if (bIsHit)
 	{
 		FDamageEvent DamageEvent;
-		//Cast<AABCharacterBase>(OutHitResult.GetActor())->SetDead();//상대방에대한 정보를 가져온다.
 		OutHitResult.GetActor()->TakeDamage(100.0f, DamageEvent, GetController(), this);
+		if (Curcount < MaxSpawncount)
+		{
+			UE_LOG(LogTemp, Log, TEXT("Spawn %d"),Curcount);
+			
+		}
+		else if (Curcount == MaxSpawncount)
+		{
+			UE_LOG(LogTemp, Display, TEXT("Clear"));
+			GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Black, FString::Printf(TEXT("Clear ")));
+		}
+		
+		//Cast<AABCharacterBase>(OutHitResult.GetActor())->SetDead();//상대방에대한 정보를 가져온다.
 		//SetDead();
 	}
 #if ENABLE_DRAW_DEBUG
@@ -210,6 +305,18 @@ void AABCharacterBase::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
+}
+
+void AABCharacterBase::BeginPlay()
+{
+	Super::BeginPlay();
+
+	//ABGameModeBase->SpawnDelegate.BindUFunction(this, FName("Spawn"));
+	//ABGameModeBase();
+	//ABGameModeBase = Cast<AABGameModeBase>(GamemodeData.Get());
+	
+	//ABGameModeBase->SpawnDelegate.(FName("Spawn"));
+		//SpawnDelegate.BindUObject(this, &AABCharacterBase::Spawn)
 }
 
 void AABCharacterBase::SetCharacterControlData(const UABCharacterControlDataAsset* CharacterControlData)

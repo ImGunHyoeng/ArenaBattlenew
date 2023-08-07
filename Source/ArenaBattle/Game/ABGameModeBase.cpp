@@ -4,15 +4,51 @@
 #include "Game/ABGameModeBase.h"
 #include "Character/ABCharacterNonPlayer.h"
 
-void AABGameModeBase::Spawn()
-{
-	
-}
+//AABGameModeBase* AABGameModeBase ::Gamemode = nullptr;
+//void AABGameModeBase::Spawn()
+//{
+//	////SpawnDelegate.ExecuteIfBound();
+//	//if (CurCount < MaxCountEnemy)
+//	//{
+//	//	CurCount++;
+//	//double pos_x = (rand() % 100) * 7;
+//	//double pos_y = (rand() % 100) * 7;
+//	//if ((int)pos_x % 2 == 1)pos_x *= -1;
+//	//if ((int)pos_y % 2 == 1)pos_y *= -1;
+//	//FVector position(pos_x, pos_y, 90);
+//	//static FRotator rotation = FRotator::ZeroRotator;
+//	//	AActor* SpawnedActor = GetWorld()->SpawnActor<AABCharacterNonPlayer>(TargetClass, position, rotation);
+//	//	while (SpawnedActor == NULL)
+//	//	{
+//	//		pos_x = (rand() % 100) * 7;
+//	//		pos_y = (rand() % 100) * 7;
+//	//		position.Set(pos_x, pos_y, 90);
+//	//		SpawnedActor = GetWorld()->SpawnActor<AABCharacterNonPlayer>(TargetClass, position, rotation);
+//	//	}
+//	//}
+//}
 void AABGameModeBase::BeginPlay()
 {
 	Super::BeginPlay();
-	FVector position = FVector::ZeroVector;
-	GetWorld()->SpawnActor<AABCharacterNonPlayer>(AABCharacterNonPlayer::StaticClass(), position);
+	double pos_x = (rand() % 100) * 7;
+	double pos_y = (rand() % 100) * 7;
+	if ((int)pos_x % 2 == 1)pos_x *= -1;
+	if ((int)pos_y % 2 == 1)pos_y *= -1;
+	FVector position(pos_x, pos_y, 90);
+	//MaxCountEnemy = 5;
+	FRotator rotation = FRotator::ZeroRotator;
+	AActor* SpawnedActor = GetWorld()->SpawnActor<AABCharacterNonPlayer>(TargetClass, position, rotation);
+	while (SpawnedActor == NULL)
+	{
+		pos_x = (rand() % 100) * 7;
+		pos_y = (rand() % 100) * 7;
+		position.Set(pos_x, pos_y, 90);
+		SpawnedActor = GetWorld()->SpawnActor<AABCharacterNonPlayer>(TargetClass, position, rotation);
+	}
+	
+	CharacterBase->ResetCurcount();
+	//CurCount++;
+	//UE_LOG(LogTemp, Log, TEXT("spawn %d"),CurCount);
 }
 AABGameModeBase::AABGameModeBase()
 {
@@ -30,16 +66,28 @@ AABGameModeBase::AABGameModeBase()
 	}
 
 	// Player Controller
-	static ConstructorHelpers::FClassFinder<APlayerController> PlayerControllerClassRef(TEXT("/Script/ArenaBattle.ABPlayerController"));
+	static ConstructorHelpers::FClassFinder<APlayerController> PlayerControllerClassRef(TEXT("/Script/CoreUObject.Class'/Script/ArenaBattle.ABPlayerController'"));
 	if (PlayerControllerClassRef.Class)
 	{
 		PlayerControllerClass = PlayerControllerClassRef.Class;
 	}
 
-	static ConstructorHelpers::FObjectFinder<AABCharacterNonPlayer> SecondPawnRef(TEXT("/Script/CoreUObject.Class'/Script/ArenaBattle.ABCharacterNonPlayer'"));
-	if (SecondPawnRef.Object)
+	static ConstructorHelpers::FClassFinder<AABCharacterNonPlayer> TargetRef(TEXT("/Script/CoreUObject.Class'/Script/ArenaBattle.ABCharacterNonPlayer'"));
+	if (TargetRef.Class)
 	{
-		SecondPawnClass = SecondPawnRef.Object;
+		TargetClass = TargetRef.Class;
 	}
-
+	//Gamemode = this;
+	//MaxCountEnemy = 5;
 }
+//
+//int32& AABGameModeBase::GetCurcount()
+//{
+//	// TODO: 여기에 return 문을 삽입합니다.
+//	return CurCount;
+//}
+//
+//const int32 AABGameModeBase::GetMaxcount()
+//{
+//	return MaxCountEnemy;
+//}

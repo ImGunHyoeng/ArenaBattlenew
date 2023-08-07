@@ -9,16 +9,24 @@
 /**
  * 
  */
+//DECLARE_DYNAMIC_DELEGATE(FSpawnDelegate);
+
 UCLASS()
 class ARENABATTLE_API AABGameModeBase : public AGameModeBase
 {
 	GENERATED_BODY()
 public:
+	
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animation)
-	TObjectPtr<class AABCharacterNonPlayer> SecondPawnClass;;
-		
-	void Spawn();
+		TSubclassOf<class AABCharacterNonPlayer> TargetClass;
+
 	virtual void BeginPlay() override;
 	AABGameModeBase();
+	class AABCharacterBase* CharacterBase;
+
+
+
+	
+
 };
