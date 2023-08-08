@@ -4,7 +4,7 @@
 #include "Game/ABGameModeBase.h"
 #include "Character/ABCharacterNonPlayer.h"
 
-//AABGameModeBase* AABGameModeBase ::Gamemode = nullptr;
+
 //void AABGameModeBase::Spawn()
 //{
 //	////SpawnDelegate.ExecuteIfBound();
@@ -80,14 +80,4 @@ AABGameModeBase::AABGameModeBase()
 	//Gamemode = this;
 	//MaxCountEnemy = 5;
 }
-//
-//int32& AABGameModeBase::GetCurcount()
-//{
-//	// TODO: 여기에 return 문을 삽입합니다.
-//	return CurCount;
-//}
-//
-//const int32 AABGameModeBase::GetMaxcount()
-//{
-//	return MaxCountEnemy;
-//}
+

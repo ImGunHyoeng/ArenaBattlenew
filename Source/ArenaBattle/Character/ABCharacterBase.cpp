@@ -316,7 +316,7 @@ void AABCharacterBase::BeginPlay()
 	//ABGameModeBase = Cast<AABGameModeBase>(GamemodeData.Get());
 	
 	//ABGameModeBase->SpawnDelegate.(FName("Spawn"));
-		//SpawnDelegate.BindUObject(this, &AABCharacterBase::Spawn)
+	//SpawnDelegate.BindUObject(this, &AABCharacterBase::Spawn)
 }
 
 void AABCharacterBase::SetCharacterControlData(const UABCharacterControlDataAsset* CharacterControlData)

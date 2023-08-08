@@ -25,8 +25,10 @@ public:
 	AABGameModeBase();
 	class AABCharacterBase* CharacterBase;
 
-
-
+	//FSpawnDelegate SpawnDelegate;
+	//UFUNCTION()
+	//	void Spawn();
 	
-
+	/*int32 MaxCountEnemy;
+	int32 CurCount;*/
 };
