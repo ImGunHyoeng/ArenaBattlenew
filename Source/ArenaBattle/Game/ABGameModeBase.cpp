@@ -5,28 +5,28 @@
 #include "Character/ABCharacterNonPlayer.h"
 
 
-//void AABGameModeBase::Spawn()
-//{
-//	////SpawnDelegate.ExecuteIfBound();
-//	//if (CurCount < MaxCountEnemy)
-//	//{
-//	//	CurCount++;
-//	//double pos_x = (rand() % 100) * 7;
-//	//double pos_y = (rand() % 100) * 7;
-//	//if ((int)pos_x % 2 == 1)pos_x *= -1;
-//	//if ((int)pos_y % 2 == 1)pos_y *= -1;
-//	//FVector position(pos_x, pos_y, 90);
-//	//static FRotator rotation = FRotator::ZeroRotator;
-//	//	AActor* SpawnedActor = GetWorld()->SpawnActor<AABCharacterNonPlayer>(TargetClass, position, rotation);
-//	//	while (SpawnedActor == NULL)
-//	//	{
-//	//		pos_x = (rand() % 100) * 7;
-//	//		pos_y = (rand() % 100) * 7;
-//	//		position.Set(pos_x, pos_y, 90);
-//	//		SpawnedActor = GetWorld()->SpawnActor<AABCharacterNonPlayer>(TargetClass, position, rotation);
-//	//	}
-//	//}
-//}
+void AABGameModeBase::Spawn()
+{
+	SpawnDelegate.ExecuteIfBound();
+	if (CurCount < MaxCountEnemy)
+	{
+		CurCount++;
+	double pos_x = (rand() % 100) * 7;
+	double pos_y = (rand() % 100) * 7;
+	if ((int)pos_x % 2 == 1)pos_x *= -1;
+	if ((int)pos_y % 2 == 1)pos_y *= -1;
+	FVector position(pos_x, pos_y, 90);
+	static FRotator rotation = FRotator::ZeroRotator;
+		AActor* SpawnedActor = GetWorld()->SpawnActor<AABCharacterNonPlayer>(TargetClass, position, rotation);
+		while (SpawnedActor == NULL)
+		{
+			pos_x = (rand() % 100) * 7;
+			pos_y = (rand() % 100) * 7;
+			position.Set(pos_x, pos_y, 90);
+			SpawnedActor = GetWorld()->SpawnActor<AABCharacterNonPlayer>(TargetClass, position, rotation);
+		}
+	}
+}
 void AABGameModeBase::BeginPlay()
 {
 	Super::BeginPlay();

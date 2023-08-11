@@ -12,7 +12,9 @@
 #include "TimerManager.h"
 #include "Character/ABCharacterNonPlayer.h"
 #include "Game/ABGameModeBase.h"
-
+#include "Components\Gamestate"
+E:\UE_5.1\Engine\Plugins\Experimental\ModularGameplay\Source\ModularGameplay\Public\Components\GameStateComponent.h
+//GetGameMode의 위치
 int32 AABCharacterBase::MaxSpawncount = 5;
 int32 AABCharacterBase::Curcount = 1;
 // Sets default values
@@ -310,8 +312,10 @@ void AABCharacterBase::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 void AABCharacterBase::BeginPlay()
 {
 	Super::BeginPlay();
-
-	//ABGameModeBase->SpawnDelegate.BindUFunction(this, FName("Spawn"));
+	//TObjectPtr<AABCharacterBase> AB = this;
+	//GetGamemode로 가져와서 delegate중에 오브젝트의 참조를 받아서 가져와야한다.
+	ABGameModeBase.getgamem
+	ABGameModeBase->SpawnDelegate.BindUFunction(this, FName("Spawn"));
 	//ABGameModeBase();
 	//ABGameModeBase = Cast<AABGameModeBase>(GamemodeData.Get());
 	

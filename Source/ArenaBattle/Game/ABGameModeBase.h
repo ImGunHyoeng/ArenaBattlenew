@@ -9,7 +9,7 @@
 /**
  * 
  */
-//DECLARE_DYNAMIC_DELEGATE(FSpawnDelegate);
+DECLARE_DYNAMIC_DELEGATE(FSpawnDelegate);
 
 UCLASS()
 class ARENABATTLE_API AABGameModeBase : public AGameModeBase
@@ -25,9 +25,9 @@ public:
 	AABGameModeBase();
 	class AABCharacterBase* CharacterBase;
 
-	//FSpawnDelegate SpawnDelegate;
-	//UFUNCTION()
-	//	void Spawn();
+	FSpawnDelegate SpawnDelegate;
+	UFUNCTION()
+		void Spawn();
 	
 	/*int32 MaxCountEnemy;
 	int32 CurCount;*/
